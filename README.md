@@ -1,9 +1,8 @@
-
 # 🧮 BMI Calculator
 
-A simple and interactive **BMI (Body Mass Index) Calculator** built using Python and Tkinter. The application allows users to enter their height and weight using sliders and calculates their BMI along with the corresponding health category.
+A simple and interactive **BMI (Body Mass Index) Calculator** built using Python and Tkinter. This application allows users to enter their height and weight using interactive sliders and calculates their BMI along with the corresponding health category.
 
-## 📸 Features
+## ✨ Features
 
 * 📏 Calculate BMI using Height and Weight
 * 🎚️ Interactive sliders for height and weight selection
@@ -36,16 +35,16 @@ BMI-Calculator/
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/BMI-Calculator.git
+git clone https://github.com/siddharthgajbhare/BMI-Calculator.git
 ```
 
-### 2. Navigate to Project Folder
+### 2. Navigate to the Project Folder
 
 ```bash
 cd BMI-Calculator
 ```
 
-### 3. Install Required Library
+### 3. Install Required Dependencies
 
 ```bash
 pip install pillow
@@ -74,15 +73,13 @@ BMI = Weight (kg) / Height² (m²)
 | 25 - 29.9    | Overweight  |
 | 30 and above | Health Risk |
 
-## 🖼️ Application Preview
+## 🖼️ How It Works
 
-The application provides an easy-to-use graphical interface where users can:
-
-1. Select their height using the slider.
-2. Select their weight using the slider.
+1. Select your height using the slider.
+2. Select your weight using the slider.
 3. Click on the **Report** button.
-4. View their BMI score.
-5. Check their health category.
+4. The application calculates your BMI.
+5. View your BMI score and health category.
 
 ## 🚀 Future Improvements
 
@@ -91,14 +88,19 @@ The application provides an easy-to-use graphical interface where users can:
 * Improve UI design
 * Add dark mode
 * Save user reports
-* Add health recommendations based on BMI
+* Add personalized health recommendations
 
 ## 👨‍💻 Author
 
 **Siddharth Gajbhare**
 
-* GitHub: [@siddharthgajbhare](https://github.com/siddharthgajbhare)
+* GitHub: https://github.com/siddharthgajbhare
+* Portfolio: [Siddharth Gajbhare](https://github.com/siddharthgajbhare)
 
 ## ⭐ Support
 
 If you like this project, don't forget to give it a ⭐ on GitHub!
+
+---
+
+Made with ❤️ by **Siddharth Gajbhare**
