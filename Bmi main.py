@@ -1,241 +1,455 @@
-//aad cal new
-import tkinter as tkinter
-from tkinter import ttk
+import tkinter as tk
+from tkinter import ttk, messagebox
 from PIL import Image, ImageTk
+from datetime import datetime
 
 
-# Creating main window
-root = tkinter.Tk()
+# ==========================================================
+# Main Window
+# ==========================================================
 
-# Setting title and geometry
+root = tk.Tk()
 root.title("BMI Calculator")
-root.geometry("470x580+300+200")
+root.geometry("470x650+300+150")
 root.resizable(False, False)
-
-# Background color
-root.config(bg="lightgrey")
+root.configure(bg="#e9f5f4")
 
 
-# ---------------- BMI Calculation ----------------
-def bmi():
+# ==========================================================
+# Variables
+# ==========================================================
+
+height = tk.StringVar(value="170")
+weight = tk.StringVar(value="65")
+age = tk.StringVar(value="25")
+gender = tk.StringVar(value="Male")
+unit = tk.StringVar(value="Metric")
+
+bmi_result = tk.StringVar(value="--")
+status_result = tk.StringVar(value="Enter your details")
+advice_result = tk.StringVar(value="")
+
+history = []
+
+
+# ==========================================================
+# BMI Calculation
+# ==========================================================
+
+def calculate_bmi():
     try:
-        Height = float(h.get())
-        Weight = float(w.get())
+        h = float(height.get())
+        w = float(weight.get())
+        a = int(age.get())
 
-        if Height <= 0 or Weight <= 0:
-            label.config(text="Invalid")
-            label1.config(text="Please enter valid height and weight")
-            return
+        if h <= 0 or w <= 0 or a <= 0:
+            raise ValueError
 
-        # Convert cm to meters
-        m = Height / 100
+        # Metric calculation
+        if unit.get() == "Metric":
+            meters = h / 100
+            bmi_value = w / (meters ** 2)
 
-        # Calculate BMI
-        B = round(Weight / (m ** 2), 1)
-
-        # Display BMI
-        label.config(text=B)
-
-        # BMI Conditions
-        if B < 18.5:
-            label1.config(text="Underweight")
-        elif B < 25:
-            label1.config(text="Normal")
-        elif B < 30:
-            label1.config(text="Overweight")
+        # Imperial calculation
         else:
-            label1.config(text="Health is at risk!\nNeed to lose weight")
+            bmi_value = (w / (h ** 2)) * 703
+
+        bmi_value = round(bmi_value, 1)
+
+        bmi_result.set(str(bmi_value))
+
+        # BMI category
+        if bmi_value < 18.5:
+            category = "Underweight"
+            color = "#3498db"
+            advice = "Consider a balanced diet and healthy weight gain."
+        elif bmi_value < 25:
+            category = "Normal Weight"
+            color = "#27ae60"
+            advice = "Great! Maintain your healthy lifestyle."
+        elif bmi_value < 30:
+            category = "Overweight"
+            color = "#f39c12"
+            advice = "Regular exercise and a balanced diet may help."
+        else:
+            category = "Obesity"
+            color = "#e74c3c"
+            advice = "Consider discussing your health with a professional."
+
+        status_result.set(category)
+        status_label.config(fg=color)
+
+        advice_result.set(advice)
+
+        # Save calculation to history
+        now = datetime.now().strftime("%H:%M:%S")
+
+        history.append({
+            "time": now,
+            "age": a,
+            "gender": gender.get(),
+            "height": h,
+            "weight": w,
+            "bmi": bmi_value,
+            "category": category
+        })
+
+        update_history()
 
     except ValueError:
-        label.config(text="Error")
-        label1.config(text="Please enter valid numbers")
+        messagebox.showerror(
+            "Invalid Input",
+            "Please enter valid positive numbers."
+        )
 
 
-# ---------------- Heading ----------------
-top = tkinter.Label(
+# ==========================================================
+# Reset
+# ==========================================================
+
+def reset():
+    height.set("170")
+    weight.set("65")
+    age.set("25")
+    gender.set("Male")
+    unit.set("Metric")
+
+    bmi_result.set("--")
+    status_result.set("Enter your details")
+    advice_result.set("")
+
+    status_label.config(fg="black")
+
+
+# ==========================================================
+# History
+# ==========================================================
+
+def update_history():
+    history_box.delete(0, tk.END)
+
+    for item in history[-5:]:
+        text = (
+            f"{item['time']} | "
+            f"BMI {item['bmi']} | "
+            f"{item['category']}"
+        )
+
+        history_box.insert(tk.END, text)
+
+
+def clear_history():
+    history.clear()
+    history_box.delete(0, tk.END)
+
+
+# ==========================================================
+# Header
+# ==========================================================
+
+header = tk.Frame(
     root,
+    bg="#1f6e68",
+    height=75
+)
+
+header.pack(fill="x")
+
+tk.Label(
+    header,
     text="BMI CALCULATOR",
     font=("Arial", 25, "bold"),
-    width=25,
-    bd=5,
-    bg="white"
-)
-top.place(x=0, y=0)
+    bg="#1f6e68",
+    fg="white"
+).pack(pady=18)
 
 
-# ---------------- Bottom Box ----------------
-bottom = tkinter.Label(
+# ==========================================================
+# Input Section
+# ==========================================================
+
+input_frame = tk.Frame(
     root,
-    width=72,
-    height=18,
-    bg="lightcyan"
+    bg="#e9f5f4"
 )
-bottom.pack(side="bottom")
+
+input_frame.pack(pady=15)
 
 
-# ---------------- Images ----------------
-try:
-    box = tkinter.PhotoImage(file="bo.png")
-    tkinter.Label(root, image=box).place(x=20, y=100)
-    tkinter.Label(root, image=box).place(x=240, y=100)
+# Age
 
-    scale_img = tkinter.PhotoImage(file="scale.png")
-    tkinter.Label(
-        root,
-        image=scale_img,
-        bg="lightcyan"
-    ).place(x=20, y=310)
+tk.Label(
+    input_frame,
+    text="Age",
+    font=("Arial", 11, "bold"),
+    bg="#e9f5f4"
+).grid(row=0, column=0, padx=10, pady=5)
 
-except tkinter.TclError:
-    print("Image files not found!")
-
-
-# ---------------- Height Slider ----------------
-current = tkinter.DoubleVar()
+tk.Entry(
+    input_frame,
+    textvariable=age,
+    width=10,
+    font=("Arial", 13),
+    justify="center"
+).grid(row=0, column=1, padx=10)
 
 
-def slider_c(value):
-    height.set("{:.0f}".format(current.get()))
+# Gender
 
-    try:
-        size = int(current.get())
+tk.Label(
+    input_frame,
+    text="Gender",
+    font=("Arial", 11, "bold"),
+    bg="#e9f5f4"
+).grid(row=0, column=2, padx=10)
 
-        img = Image.open("man.png")
+gender_box = ttk.Combobox(
+    input_frame,
+    textvariable=gender,
+    values=["Male", "Female"],
+    width=10,
+    state="readonly"
+)
 
-        # Resize image
-        resized_img = img.resize((50, max(50, 10 + size)))
-
-        p = ImageTk.PhotoImage(resized_img)
-
-        man.config(image=p)
-        man.image = p
-
-        man.place(x=70, y=max(350, 550 - size))
-
-    except FileNotFoundError:
-        pass
+gender_box.grid(row=0, column=3, padx=10)
 
 
-style = ttk.Style()
-style.configure("TScale", background="white")
+# ==========================================================
+# Unit Selection
+# ==========================================================
 
-slider_h = ttk.Scale(
+tk.Label(
+    root,
+    text="Measurement Unit",
+    font=("Arial", 11, "bold"),
+    bg="#e9f5f4"
+).pack()
+
+unit_frame = tk.Frame(
+    root,
+    bg="#e9f5f4"
+)
+
+unit_frame.pack(pady=5)
+
+tk.Radiobutton(
+    unit_frame,
+    text="Metric (cm / kg)",
+    variable=unit,
+    value="Metric",
+    bg="#e9f5f4",
+    command=reset
+).pack(side="left", padx=10)
+
+tk.Radiobutton(
+    unit_frame,
+    text="Imperial (in / lb)",
+    variable=unit,
+    value="Imperial",
+    bg="#e9f5f4",
+    command=reset
+).pack(side="left", padx=10)
+
+
+# ==========================================================
+# Height
+# ==========================================================
+
+tk.Label(
+    root,
+    text="Height",
+    font=("Arial", 13, "bold"),
+    bg="#e9f5f4"
+).pack(pady=(10, 2))
+
+height_entry = tk.Entry(
+    root,
+    textvariable=height,
+    width=10,
+    font=("Arial", 20),
+    justify="center"
+)
+
+height_entry.pack()
+
+height_slider = ttk.Scale(
     root,
     from_=50,
     to=220,
     orient="horizontal",
-    style="TScale",
-    command=slider_c,
-    variable=current
+    length=300,
+    command=lambda value: height.set(f"{float(value):.0f}")
 )
 
-slider_h.place(x=80, y=250)
+height_slider.set(170)
+height_slider.pack(pady=5)
 
 
-# ---------------- Weight Slider ----------------
-current2 = tkinter.DoubleVar()
+# ==========================================================
+# Weight
+# ==========================================================
 
+tk.Label(
+    root,
+    text="Weight",
+    font=("Arial", 13, "bold"),
+    bg="#e9f5f4"
+).pack(pady=(10, 2))
 
-def slider_c2(value):
-    weight.set("{:.0f}".format(current2.get()))
+weight_entry = tk.Entry(
+    root,
+    textvariable=weight,
+    width=10,
+    font=("Arial", 20),
+    justify="center"
+)
 
+weight_entry.pack()
 
-slider_w = ttk.Scale(
+weight_slider = ttk.Scale(
     root,
     from_=20,
     to=200,
     orient="horizontal",
-    style="TScale",
-    command=slider_c2,
-    variable=current2
+    length=300,
+    command=lambda value: weight.set(f"{float(value):.0f}")
 )
 
-slider_w.place(x=300, y=250)
+weight_slider.set(65)
+weight_slider.pack(pady=5)
 
 
-# ---------------- Entry Variables ----------------
-height = tkinter.StringVar()
-weight = tkinter.StringVar()
+# ==========================================================
+# Buttons
+# ==========================================================
 
-
-# Height Entry
-h = tkinter.Entry(
+button_frame = tk.Frame(
     root,
-    textvariable=height,
-    width=5,
-    font=("Arial", 50),
-    bg="white",
-    fg="black",
-    bd=0,
-    justify="center"
+    bg="#e9f5f4"
 )
 
-h.place(x=35, y=160)
+button_frame.pack(pady=12)
 
-
-# Weight Entry
-w = tkinter.Entry(
-    root,
-    textvariable=weight,
-    width=5,
-    font=("Arial", 50),
-    bg="white",
-    fg="black",
-    bd=0,
-    justify="center"
-)
-
-w.place(x=255, y=160)
-
-
-# Default Values
-current.set(170)
-current2.set(65)
-
-height.set("170")
-weight.set("65")
-
-
-# ---------------- Man Image ----------------
-man = tkinter.Label(root, bg="lightcyan")
-man.place(x=70, y=400)
-
-
-# ---------------- Report Button ----------------
-tkinter.Button(
-    root,
-    text="Report",
-    width=15,
+tk.Button(
+    button_frame,
+    text="Calculate BMI",
+    width=16,
     height=2,
     font=("Arial", 10, "bold"),
     bg="#1f6e68",
     fg="white",
-    command=bmi
-).place(x=280, y=340)
+    activebackground="#15534f",
+    activeforeground="white",
+    command=calculate_bmi
+).pack(side="left", padx=5)
 
-
-# ---------------- BMI Result ----------------
-label = tkinter.Label(
-    root,
-    font=("Arial", 30, "bold"),
-    bg="lightcyan",
-    fg="black"
-)
-
-label.place(x=350, y=450)
-
-
-# BMI Status
-label1 = tkinter.Label(
-    root,
+tk.Button(
+    button_frame,
+    text="Reset",
+    width=10,
+    height=2,
     font=("Arial", 10, "bold"),
-    bg="lightcyan",
-    fg="black",
-    width=50
+    bg="#777777",
+    fg="white",
+    command=reset
+).pack(side="left", padx=5)
+
+
+# ==========================================================
+# Result Section
+# ==========================================================
+
+result_frame = tk.Frame(
+    root,
+    bg="white",
+    bd=2,
+    relief="groove"
 )
 
-label1.place(x=200, y=500)
+result_frame.pack(
+    fill="x",
+    padx=25,
+    pady=5
+)
+
+tk.Label(
+    result_frame,
+    text="YOUR BMI",
+    font=("Arial", 11, "bold"),
+    bg="white"
+).pack(pady=(8, 0))
+
+tk.Label(
+    result_frame,
+    textvariable=bmi_result,
+    font=("Arial", 35, "bold"),
+    bg="white",
+    fg="#1f6e68"
+).pack()
+
+status_label = tk.Label(
+    result_frame,
+    textvariable=status_result,
+    font=("Arial", 16, "bold"),
+    bg="white"
+)
+
+status_label.pack()
+
+tk.Label(
+    result_frame,
+    textvariable=advice_result,
+    font=("Arial", 9),
+    bg="white",
+    wraplength=380
+).pack(pady=8)
 
 
-# Run application
+# ==========================================================
+# History
+# ==========================================================
+
+tk.Label(
+    root,
+    text="Recent Calculations",
+    font=("Arial", 12, "bold"),
+    bg="#e9f5f4"
+).pack(pady=(8, 3))
+
+history_box = tk.Listbox(
+    root,
+    width=52,
+    height=4,
+    font=("Arial", 9)
+)
+
+history_box.pack()
+
+tk.Button(
+    root,
+    text="Clear History",
+    command=clear_history,
+    font=("Arial", 9),
+    bg="#eeeeee"
+).pack(pady=5)
+
+
+# ==========================================================
+# BMI Reference
+# ==========================================================
+
+tk.Label(
+    root,
+    text="BMI: <18.5 Underweight | 18.5–24.9 Normal | "
+         "25–29.9 Overweight | 30+ Obesity",
+    font=("Arial", 8),
+    bg="#e9f5f4",
+    fg="#555555"
+).pack(pady=3)
+
+
+# ==========================================================
+# Start Application
+# ==========================================================
+
 root.mainloop()
