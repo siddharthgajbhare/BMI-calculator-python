@@ -4,7 +4,6 @@ from tkinter import ttk, messagebox
 from PIL import Image, ImageTk
 from datetime import datetime
 
-
 # ==========================================================
 # Main Window
 # ==========================================================
@@ -14,7 +13,6 @@ root.title("BMI Calculator")
 root.geometry("470x650+300+150")
 root.resizable(False, False)
 root.configure(bg="#e9f5f4")
-
 
 # ==========================================================
 # Variables
