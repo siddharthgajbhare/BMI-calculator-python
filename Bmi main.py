@@ -1,4 +1,4 @@
-//code done 
+//code done, if u want u can change
 import tkinter as tk
 from tkinter import ttk, messagebox
 from PIL import Image, ImageTk
